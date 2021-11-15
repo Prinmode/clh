@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.ApiOperation;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
@@ -38,6 +40,7 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
+  @ApiOperation(value = "Login user. To authorize, prefix the word \"Bearer \" (including space) to the generated token.", response = UserResource.class)
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody SigninRequest request) {
 
@@ -55,8 +58,9 @@ public class AuthController {
         .ok(new JwtResource(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
   }
 
+  @ApiOperation(value = "User register, available roles: user, admin (respect lowercase). Use only the roles node.", response = UserResource.class)
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+  public ResponseEntity<UserResource> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     UserResource user = userService.signup(signUpRequest);
     return ResponseEntity.ok(user);
   }
