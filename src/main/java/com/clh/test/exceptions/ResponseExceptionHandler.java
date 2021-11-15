@@ -31,7 +31,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
   public final ResponseEntity<ExceptionResponse> handleResourceAlreadyExists(ResourceAlreadyExistsException ex,
       WebRequest request) {
     ExceptionResponse er = new ExceptionResponse(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
-    return new ResponseEntity<ExceptionResponse>(er, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<ExceptionResponse>(er, HttpStatus.CONFLICT);
   }
 
   @Override

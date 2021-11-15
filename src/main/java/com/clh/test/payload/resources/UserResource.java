@@ -1,5 +1,6 @@
 package com.clh.test.payload.resources;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class UserResource {
       return Collections.emptyList();
     }
 
-    List<UserResource> resources = Collections.emptyList();
+    List<UserResource> resources = new ArrayList<>();
     for (User item : items) {
       resources.add(UserResource.createFromEntity(item));
     }

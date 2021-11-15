@@ -1,5 +1,7 @@
 package com.clh.test.security;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.clh.test.security.jwt.AuthEntryPointJwt;
 import com.clh.test.security.jwt.AuthTokenFilter;
 import com.clh.test.security.services.UserDetailsServiceImpl;
@@ -56,7 +58,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-        .antMatchers("/api/auth/**").permitAll().antMatchers("/api/test/**").permitAll().anyRequest().authenticated();
+        .antMatchers("/api/auth/**").permitAll().antMatchers("/api/clients/**").permitAll().anyRequest()
+        .authenticated();
+    http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
+      response.sendError(403);
+    }).authenticationEntryPoint((request, response, authException) -> {
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    });
 
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
   }

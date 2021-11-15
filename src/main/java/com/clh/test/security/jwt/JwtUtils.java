@@ -1,7 +1,9 @@
 package com.clh.test.security.jwt;
 
+import java.security.Key;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 
 import com.clh.test.security.services.UserDetailsImpl;
@@ -19,32 +21,32 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtils {
   private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-  @Value("${clh.jwtSecret}")
-  private String jwtSecret;
-
   @Value("${clh.jwtExpiration}")
   private int jwtExpirationMs;
+
+  private Key key;
+
+  @PostConstruct
+  public void init() {
+    this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+  }
 
   public String generateJwtToken(Authentication authentication) {
 
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-    SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     return Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())
         .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(key).compact();
   }
 
   public String getUserNameFromJwtToken(String token) {
-    SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject();
   }
 
   public boolean validateJwtToken(String authToken) {
     try {
-      Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+      Jwts.parser().setSigningKey(key).parseClaimsJws(authToken);
       return true;
-    } catch (SignatureException e) {
-      logger.error("Invalid JWT signature: {}", e.getMessage());
     } catch (MalformedJwtException e) {
       logger.error("Invalid JWT token: {}", e.getMessage());
     } catch (ExpiredJwtException e) {
