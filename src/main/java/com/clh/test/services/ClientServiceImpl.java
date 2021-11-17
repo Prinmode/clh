@@ -69,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
       }
     }
 
-    if (client.getEmail().equalsIgnoreCase(request.getEmail().toLowerCase())) { // if the email is different
+    if (!client.getEmail().equalsIgnoreCase(request.getEmail().toLowerCase())) { // if the email is different
       if (this.repository.findByEmail(request.getEmail()) != null) {
         throw new ResourceAlreadyExistsException(
             "Client with email \"" + request.getIdentityCode() + "\" already exists");
