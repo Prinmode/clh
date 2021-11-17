@@ -61,15 +61,15 @@ public class ClientServiceImpl implements ClientService {
   public ClientResource update(String id, UpdateClientRequest request) {
     Client client = this.repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client not found"));
 
-    if (client.getIdentityCode().toLowerCase() != request.getIdentityCode().toLowerCase()) { // if the identity code is
-                                                                                             // different
+    if (!client.getIdentityCode().equalsIgnoreCase(request.getIdentityCode())) { // if the identity code is
+                                                                                 // different
       if (this.repository.findByIdentityCode(request.getIdentityCode()) != null) {
         throw new ResourceAlreadyExistsException(
             "Client with identity code \"" + request.getIdentityCode() + "\" already exists");
       }
     }
 
-    if (client.getEmail().toLowerCase() != request.getEmail().toLowerCase()) { // if the email is different
+    if (client.getEmail().equalsIgnoreCase(request.getEmail().toLowerCase())) { // if the email is different
       if (this.repository.findByEmail(request.getEmail()) != null) {
         throw new ResourceAlreadyExistsException(
             "Client with email \"" + request.getIdentityCode() + "\" already exists");
