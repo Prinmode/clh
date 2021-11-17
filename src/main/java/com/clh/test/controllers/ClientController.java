@@ -11,7 +11,6 @@ import com.clh.test.services.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +36,14 @@ public class ClientController {
   @Autowired
   private ClientService clientService;
 
+  @ApiOperation(value = "Get all clients. Authorized roles: user, admin.", response = ClientResource.class)
   @GetMapping()
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
   public List<ClientResource> getClients() {
     return this.clientService.getClients();
   }
 
+  @ApiOperation(value = "Get one client by id. Authorized roles: user, admin.", response = ClientResource.class)
   @GetMapping("/{id}")
   @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
   public ResponseEntity<ClientResource> getClient(@PathVariable String id) {
@@ -49,6 +53,7 @@ public class ClientController {
     return ResponseEntity.ok(client);
   }
 
+  @ApiOperation(value = "Create a client. Authorized roles: only admin.", response = ClientResource.class)
   @PostMapping()
   @ResponseStatus(HttpStatus.CREATED)
   @PreAuthorize("hasRole('ADMIN')")
@@ -56,12 +61,14 @@ public class ClientController {
     return this.clientService.create(request);
   }
 
+  @ApiOperation(value = "Update a client. Authorized roles: only admin.", response = ClientResource.class)
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ClientResource putPerson(@PathVariable("id") String id, @Valid @RequestBody UpdateClientRequest person) {
     return this.clientService.update(id, person);
   }
 
+  @ApiOperation(value = "Delete a client. Authorized roles: only admin.", response = ClientResource.class)
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public void deleteClient(@PathVariable String id) {
